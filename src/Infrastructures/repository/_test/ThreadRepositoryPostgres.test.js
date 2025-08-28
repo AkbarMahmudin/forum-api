@@ -80,8 +80,9 @@ describe("ThreadRepository", () => {
         id: 'thread-123',
         title: threadDetail.title,
         body: threadDetail.body,
-        createdAt: threadDetail.createdAt,
-        owner: 'dicoding'
+        date: threadDetail.date,
+        username: 'dicoding',
+        comments: [],
       });
     });
   });

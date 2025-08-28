@@ -37,7 +37,6 @@ const createServer = async (container) => {
 
     if (response instanceof Error) {
       // bila response tersebut error, tangani sesuai kebutuhan
-      console.log(response);
       const translatedError = DomainErrorTranslator.translate(response);
 
       // penanganan client error secara internal.

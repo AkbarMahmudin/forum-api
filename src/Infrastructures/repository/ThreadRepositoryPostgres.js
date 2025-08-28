@@ -25,21 +25,40 @@ class ThreadRepositoryPostgres extends ThreadRepository {
   }
 
   async getDetailThread(threadId) {
-    const query = {
-      text: `SELECT threads.id, threads.title, threads.body, threads.created_at AS "createdAt", users.username AS owner
+    // Get thread detail
+    const threadQuery = {
+      text: `SELECT threads.id, threads.title, threads.body, threads.created_at AS date, users.username AS username
              FROM threads
              JOIN users ON threads.owner = users.id
              WHERE threads.id = $1`,
       values: [threadId],
     };
 
-    const result = await this._pool.query(query);
+    const threadResult = await this._pool.query(threadQuery);
 
-    if (result.rowCount === 0) {
+    if (threadResult.rowCount === 0) {
       throw new NotFoundError('thread tidak ditemukan');
     }
 
-    return result.rows[0];
+    // Get comments for the thread
+    const commentQuery = {
+      text: `SELECT comments.id, comments.content, comments.created_at AS date, comments.deleted_at AS "deletedAt", users.username
+             FROM comments
+             JOIN users ON comments.owner = users.id
+             WHERE comments.thread_id = $1
+             ORDER BY comments.created_at ASC`,
+      values: [threadId],
+    };
+
+    const commentResult = await this._pool.query(commentQuery);
+
+    // Prepare thread detail with comments
+    const threadDetail = {
+      ...threadResult.rows[0],
+      comments: commentResult.rows.length > 0 ? commentResult.rows : [],
+    };
+    
+    return threadDetail;
   }
 }
 

@@ -22,6 +22,9 @@ DomainErrorTranslator._directories = {
   'ADD_THREAD.TITLE_LIMIT_CHAR': new InvariantError('tidak dapat membuat thread baru karena karakter title melebihi batas limit'),
   'ADD_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat comment baru karena properti yang dibutuhkan tidak ada'),
   'ADD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat comment baru karena tipe data tidak sesuai'),
+  'DETAIL_THREAD.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat mendapatkan detail thread karena properti yang dibutuhkan tidak ada'),
+  'DETAIL_THREAD.TITLE_LIMIT_CHAR': new InvariantError('tidak dapat mendapatkan detail thread karena karakter title melebihi batas limit'),
+  'DETAIL_THREAD.COMMENTS_NOT_ARRAY': new InvariantError('tidak dapat mendapatkan detail thread karena comments bukan array'),
 };
 
 module.exports = DomainErrorTranslator;
