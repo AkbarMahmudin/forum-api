@@ -6,7 +6,7 @@ const container = require("../../container");
 const createServer = require("../createServer");
 const preRequireSiteHelper = require("../../../../tests/PreRequireSiteHelper");
 
-describe("/threads endpoint", () => {
+describe("Threads endpoint", () => {
   afterAll(async () => {
     await pool.end();
   });
@@ -18,7 +18,7 @@ describe("/threads endpoint", () => {
   });
 
   describe("when POST /threads", () => {
-    it("should response 403 when unauthorized", async () => {
+    it("should response 401 when unauthenticated", async () => {
       // Arrange
       const requestPayload = {
         title: "A thread",

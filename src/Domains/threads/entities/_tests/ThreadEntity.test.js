@@ -42,18 +42,6 @@ describe("ThreadEntity entity", () => {
     );
   });
 
-  it("should throw error when id not valid", () => {
-    // Arrange
-    const payload = {
-      id: "thread_123",
-      title: "A thread title",
-      owner: "user-123",
-    };
-
-    // Action & Assert
-    expect(() => new ThreadEntity(payload)).toThrow("ADD_THREAD.ID_NOT_VALID");
-  });
-
   it("should create ThreadEntity object correctly", () => {
     // Arrange
     const payload = {

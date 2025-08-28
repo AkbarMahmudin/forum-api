@@ -3,6 +3,7 @@ const ClientError = require('../../Commons/exceptions/ClientError');
 const DomainErrorTranslator = require('../../Commons/exceptions/DomainErrorTranslator');
 const users = require('../../Interfaces/http/api/users');
 const threads = require('../../Interfaces/http/api/threads');
+const comments = require('../../Interfaces/http/api/comments');
 const authentications = require('../../Interfaces/http/api/authentications');
 
 const createServer = async (container) => {
@@ -21,6 +22,10 @@ const createServer = async (container) => {
       options: { container },
     },
     {
+      plugin: comments,
+      options: { container },
+    },
+    {
       plugin: authentications,
       options: { container },
     },
@@ -32,6 +37,7 @@ const createServer = async (container) => {
 
     if (response instanceof Error) {
       // bila response tersebut error, tangani sesuai kebutuhan
+      console.log(response);
       const translatedError = DomainErrorTranslator.translate(response);
 
       // penanganan client error secara internal.

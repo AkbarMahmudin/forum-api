@@ -18,10 +18,6 @@ class ThreadEntity {
       throw new Error('ADD_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
 
-    if (!/^thread-\w+$/.test(id)) {
-      throw new Error('ADD_THREAD.ID_NOT_VALID');
-    }
-
     if (title.length > 100) {
       throw new Error('ADD_THREAD.TITLE_LIMIT_CHAR');
     }
