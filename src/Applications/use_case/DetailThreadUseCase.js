@@ -17,7 +17,7 @@ class DetailThreadUseCase {
       ...comment,
       content: comment.deletedAt ? "**komentar telah dihapus**" : comment.content,
       deletedAt: undefined,
-      // TODO: add replies
+      replies: this._mapComments(comment.replies),
     }));
   }
 }

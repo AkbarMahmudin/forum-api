@@ -42,10 +42,26 @@ class ThreadRepositoryPostgres extends ThreadRepository {
 
     // Get comments for the thread
     const commentQuery = {
-      text: `SELECT comments.id, comments.content, comments.created_at AS date, comments.deleted_at AS "deletedAt", users.username
+      text: `SELECT comments.id, comments.content, comments.created_at AS date, comments.deleted_at AS "deletedAt", users.username,
+              COALESCE(
+                json_agg(
+                  json_build_object(
+                    'id', replies.id,
+                    'content', replies.content,
+                    'date', replies.created_at,
+                    'deletedAt', replies.deleted_at,
+                    'username', userReply.username
+                  )
+                ) FILTER (WHERE replies.id IS NOT NULL),
+                '[]'
+              ) AS replies
              FROM comments
              JOIN users ON comments.owner = users.id
+             LEFT JOIN comments replies ON replies.reply_to = comments.id
+             LEFT JOIN users userReply ON replies.owner = userReply.id
              WHERE comments.thread_id = $1
+             AND comments.reply_to IS NULL
+             GROUP BY comments.id, comments.content, comments.created_at, comments.deleted_at, users.username
              ORDER BY comments.created_at ASC`,
       values: [threadId],
     };

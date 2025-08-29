@@ -15,5 +15,8 @@ describe("CommentRepository", () => {
     await expect(commentRepository.verifyCommentOwner()).rejects.toThrow(
       "COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED"
     );
+    await expect(commentRepository.verifyCommentExist()).rejects.toThrow(
+      "COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED"
+    );
   });
 });
