@@ -12,12 +12,14 @@ class DetailThreadUseCase {
     return detailThread;
   }
 
-  _mapComments(comments = []) {
+  _mapComments(comments = [], isReply = false) {
     return comments.map((comment) => ({
       ...comment,
-      content: comment.deletedAt ? "**komentar telah dihapus**" : comment.content,
+      content: comment.deletedAt
+        ? `**${isReply ? "balasan" : "komentar"} telah dihapus**`
+        : comment.content,
       deletedAt: undefined,
-      replies: this._mapComments(comment.replies),
+      replies: this._mapComments(comment.replies, true),
     }));
   }
 }

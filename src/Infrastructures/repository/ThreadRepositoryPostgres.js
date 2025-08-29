@@ -52,6 +52,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
                     'deletedAt', replies.deleted_at,
                     'username', userReply.username
                   )
+                  ORDER BY replies.created_at ASC
                 ) FILTER (WHERE replies.id IS NOT NULL),
                 '[]'
               ) AS replies

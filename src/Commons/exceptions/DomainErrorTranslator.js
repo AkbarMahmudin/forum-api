@@ -1,4 +1,5 @@
 const InvariantError = require('./InvariantError');
+const AuthenticationError = require('./AuthenticationError');
 
 const DomainErrorTranslator = {
   translate(error) {
@@ -27,6 +28,7 @@ DomainErrorTranslator._directories = {
   'DETAIL_THREAD.COMMENTS_NOT_ARRAY': new InvariantError('tidak dapat mendapatkan detail thread karena comments bukan array'),
   'ADD_REPLY.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat reply baru karena properti yang dibutuhkan tidak ada'),
   'ADD_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat reply baru karena tipe data tidak sesuai'),
+  'DELETE_REPLY_USE_CASE.NOT_CONTAIN_NEEDED_PROPERTY': new AuthenticationError('Missing authentication'),
 };
 
 module.exports = DomainErrorTranslator;

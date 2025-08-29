@@ -25,11 +25,17 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     return new CommentEntity({ ...result.rows[0] });
   }
 
-  async deleteReply(threadId, commentId) {
+  async deleteReply({ threadId, commentId, replyId }) {
     const deletedAt = new Date().toISOString();
     const query = {
-      text: "UPDATE comments SET deleted_at = $3 WHERE thread_id = $1 AND id = $2 AND deleted_at IS NULL RETURNING id",
-      values: [threadId, commentId, deletedAt],
+      text: `
+        UPDATE comments SET deleted_at = $4 
+        WHERE thread_id = $1 
+        AND id = $3 
+        AND reply_to = $2 
+        AND deleted_at IS NULL 
+        RETURNING id`,
+      values: [threadId, commentId, replyId, deletedAt],
     };
 
     const result = await this._pool.query(query);

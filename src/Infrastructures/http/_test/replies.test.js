@@ -158,175 +158,170 @@ describe("Replies endpoint", () => {
     });
   });
 
-  // describe("when DELETE /threads/{threadId}/comments/{comentId}", () => {
-  //   it("should response 401 when unauthenticated", async () => {
-  //     // Arrange
-  //     await UsersTableTestHelper.addUser({ id: "user-123" });
-  //     await ThreadsTableTestHelper.addThread({
-  //       id: "thread-123",
-  //       owner: "user-123",
-  //     });
-  //     await CommentsTableTestHelper.addComment({
-  //       id: "comment-123",
-  //       threadId: "thread-123",
-  //       owner: "user-123",
-  //     });
+  describe("when DELETE /threads/{threadId}/comments/{comentId}/replies/{replyId}", () => {
+    it("should response 401 when unauthenticated", async () => {
+      // Arrange
+      await UsersTableTestHelper.addUser({ id: "user-123" });
+      await UsersTableTestHelper.addUser({ id: "user-2", username: "user 2" });
+      await UsersTableTestHelper.addUser({ id: "user-3", username: "user 3" });
+      await ThreadsTableTestHelper.addThread({
+        id: "thread-123",
+        owner: "user-123",
+      });
+      await CommentsTableTestHelper.addComment({
+        id: "comment-123",
+        threadId: "thread-123",
+        owner: "user-2",
+      });
+      await CommentsTableTestHelper.addComment({
+        id: "reply-123",
+        threadId: "thread-123",
+        replyTo: "comment-123",
+        owner: "user-3",
+      });
 
+      const server = await createServer(container);
 
-  //     const server = await createServer(container);
+      // Action
+      const response = await server.inject({
+        method: "DELETE",
+        url: "/threads/thread-123/comments/comment-123/replies/reply-123",
+      });
 
-  //     // Action
-  //     const response = await server.inject({
-  //       method: "DELETE",
-  //       url: "/threads/thread-123/comments/comment-123",
-  //     });
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(401);
+      expect(responseJson.status).toEqual("fail");
+      expect(responseJson.message).toBeDefined();
+    });
 
-  //     const responseJson = JSON.parse(response.payload);
-  //     expect(response.statusCode).toEqual(401);
-  //     expect(responseJson.status).toEqual("fail");
-  //     expect(responseJson.message).toBeDefined();
-  //   });
+    it("should response 404 when reply comment not found", async () => {
+      // Arrange
+      const server = await createServer(container);
 
-  //   it("should response 404 when thread not found", async () => {
-  //     // Arrange
-  //     const server = await createServer(container);
+      await UsersTableTestHelper.addUser({ id: "user-2" });
+      const { accessToken } = await preRequireSiteHelper({
+        server,
+        username: "Hiiro",
+      });
+      await ThreadsTableTestHelper.addThread({
+        id: "thread-123",
+        owner: "user-2",
+      });
+      await CommentsTableTestHelper.addComment({
+        id: "comment-123",
+        threadId: "thread-123",
+        owner: "user-2",
+      });
 
-  //     const { accessToken, userId } = await preRequireSiteHelper({
-  //       server,
-  //       username: "Hiiro",
-  //     });
-  //     await ThreadsTableTestHelper.addThread({
-  //       id: "thread-123",
-  //       owner: userId,
-  //     });
-  //     await CommentsTableTestHelper.addComment({
-  //       id: "comment-123",
-  //       threadId: "thread-123",
-  //       owner: userId,
-  //     });
+      // Action
+      const response = await server.inject({
+        method: "DELETE",
+        url: "/threads/thread-123/comments/comment-123/replies/xxx",
+        payload: {},
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
 
-  //     // Action
-  //     const response = await server.inject({
-  //       method: "DELETE",
-  //       url: "/threads/xxx/comments/comment-123",
-  //       payload: {},
-  //       headers: { Authorization: `Bearer ${accessToken}` },
-  //     });
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.status).toEqual("fail");
+      expect(responseJson.message).toBeDefined();
+    });
 
-  //     const responseJson = JSON.parse(response.payload);
-  //     expect(response.statusCode).toEqual(404);
-  //     expect(responseJson.status).toEqual("fail");
-  //     expect(responseJson.message).toBeDefined();
-  //   });
+    it("should response 403 when delete with not comment's owner", async () => {
+      // Arrange
+      const server = await createServer(container);
+      // 1. auth as comment not owner
+      const { accessToken } = await preRequireSiteHelper({
+        server,
+        username: "Hiiro",
+      });
+      // 2. add thread
+      await UsersTableTestHelper.addUser({
+        id: "user-124",
+        username: "thread owner",
+      });
+      await ThreadsTableTestHelper.addThread({
+        id: "thread-124",
+        owner: "user-124",
+      });
+      // 3. add comment as comment owner
+      await UsersTableTestHelper.addUser({
+        id: "user-125",
+        username: "commentor owner",
+      });
+      await CommentsTableTestHelper.addComment({
+        id: "comment-125",
+        threadId: "thread-124",
+        owner: "user-125",
+      });
+      // 4. add reply as reply owner
+      await UsersTableTestHelper.addUser({
+        id: "user-126",
+        username: "reply owner",
+      });
+      await CommentsTableTestHelper.addComment({
+        id: "reply-125",
+        threadId: "thread-124",
+        replyTo: "comment-125",
+        owner: "user-126",
+      });
 
-  //   it("should response 404 when comment not found", async () => {
-  //     // Arrange
-  //     const server = await createServer(container);
+      // Action
+      const response = await server.inject({
+        method: "DELETE",
+        url: "/threads/thread-124/comments/comment-125/replies/reply-125",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
 
-  //     const { accessToken, userId } = await preRequireSiteHelper({
-  //       server,
-  //       username: "Hiiro",
-  //     });
-  //     await ThreadsTableTestHelper.addThread({
-  //       id: "thread-123",
-  //       owner: userId,
-  //     });
-  //     await CommentsTableTestHelper.addComment({
-  //       id: "comment-123",
-  //       threadId: "thread-123",
-  //       owner: userId,
-  //     });
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(403);
+      expect(responseJson.status).toEqual("fail");
+      expect(responseJson.message).toBeDefined();
+    });
 
-  //     // Action
-  //     const response = await server.inject({
-  //       method: "DELETE",
-  //       url: "/threads/thread-123/comments/xxx",
-  //       payload: {},
-  //       headers: { Authorization: `Bearer ${accessToken}` },
-  //     });
+    it("should response 200 and success deleted", async () => {
+      // Arrange
+      // eslint-disable-next-line no-undef
+      const server = await createServer(container);
 
-  //     const responseJson = JSON.parse(response.payload);
-  //     expect(response.statusCode).toEqual(404);
-  //     expect(responseJson.status).toEqual("fail");
-  //     expect(responseJson.message).toBeDefined();
-  //   });
+      // add thread
+      await UsersTableTestHelper.addUser({ id: "user-124", username: "Taka" });
+      await ThreadsTableTestHelper.addThread({
+        id: "thread-124",
+        owner: "user-124",
+      });
+      await CommentsTableTestHelper.addComment({
+        id: "comment-123",
+        threadId: "thread-124",
+        owner: "user-124",
+      });
 
-  //   it("should response 403 when delete with not comment's owner", async () => {
-  //     // Arrange
-  //     const server = await createServer(container);
-  //     // 1. auth as comment not owner
-  //     const { accessToken } = await preRequireSiteHelper({
-  //       server,
-  //       username: "Hiiro",
-  //     });
-  //     // 2. add thread
-  //     await UsersTableTestHelper.addUser({
-  //       id: "user-124",
-  //       username: "thread owner",
-  //     });
-  //     await ThreadsTableTestHelper.addThread({
-  //       id: "thread-124",
-  //       owner: "user-124",
-  //     });
-  //     // 3. add comment as comment owner
-  //     await UsersTableTestHelper.addUser({
-  //       id: "user-125",
-  //       username: "commentor owner",
-  //     });
-  //     await CommentsTableTestHelper.addComment({
-  //       id: "comment-125",
-  //       threadId: "thread-124",
-  //       owner: "user-125",
-  //     });
+      // add comment as comment owner
+      const { accessToken, userId } = await preRequireSiteHelper({
+        server,
+        username: "Hiiro",
+      });
 
-  //     // Action
-  //     const response = await server.inject({
-  //       method: "DELETE",
-  //       url: "/threads/thread-124/comments/comment-125",
-  //       headers: { Authorization: `Bearer ${accessToken}` },
-  //     });
+      // add reply as reply owner
+      await CommentsTableTestHelper.addComment({
+        id: "reply-123",
+        threadId: "thread-124",
+        replyTo: "comment-123",
+        owner: userId,
+      });
 
-  //     // Assert
-  //     const responseJson = JSON.parse(response.payload);
-  //     expect(response.statusCode).toEqual(403);
-  //     expect(responseJson.status).toEqual("fail");
-  //     expect(responseJson.message).toBeDefined();
-  //   });
+      // Action
+      const response = await server.inject({
+        method: "DELETE",
+        url: "/threads/thread-124/comments/comment-123/replies/reply-123",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
 
-  //   it("should response 200 and success deleted", async () => {
-  //     // Arrange
-  //     // eslint-disable-next-line no-undef
-  //     const server = await createServer(container);
-
-  //     // add thread
-  //     await UsersTableTestHelper.addUser({ id: "user-124", username: "Taka" });
-  //     await ThreadsTableTestHelper.addThread({
-  //       id: "thread-124",
-  //       owner: "user-124",
-  //     });
-
-  //     // add comment as comment owner
-  //     const { accessToken, userId } = await preRequireSiteHelper({
-  //       server,
-  //       username: "Hiiro",
-  //     });
-  //     await CommentsTableTestHelper.addComment({
-  //       id: "comment-123",
-  //       threadId: "thread-124",
-  //       owner: userId,
-  //     });
-
-  //     // Action
-  //     const response = await server.inject({
-  //       method: "DELETE",
-  //       url: "/threads/thread-124/comments/comment-123",
-  //       headers: { Authorization: `Bearer ${accessToken}` },
-  //     });
-
-  //     // Assert
-  //     const responseJson = JSON.parse(response.payload);
-  //     expect(response.statusCode).toEqual(200);
-  //     expect(responseJson.status).toEqual("success");
-  //   });
-  // });
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual("success");
+    });
+  });
 });
