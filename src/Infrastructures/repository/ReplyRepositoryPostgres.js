@@ -1,7 +1,6 @@
 const ReplyRepository = require("../../Domains/replies/ReplyRepository");
 const CommentEntity = require("../../Domains/comments/entities/CommentEntity");
 const NotFoundError = require("../../Commons/exceptions/NotFoundError");
-const AuthorizationError = require("../../Commons/exceptions/AuthorizationError");
 
 class ReplyRepositoryPostgres extends ReplyRepository {
   constructor(pool, idGenerator) {
@@ -11,55 +10,41 @@ class ReplyRepositoryPostgres extends ReplyRepository {
   }
 
   async createReply(newReply) {
-    const { content, threadId, replyTo, owner } = newReply;
+    const { content, threadId, commentId, ownerId } = newReply;
     const id = `reply-${this._idGenerator()}`;
     const createdAt = new Date().toISOString();
 
     const query = {
       text: "INSERT INTO comments (id, content, thread_id, owner, reply_to, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, content, owner",
-      values: [id, content, threadId, owner, replyTo, createdAt, createdAt],
+      values: [id, content, threadId, ownerId, commentId, createdAt, createdAt],
     };
 
     const result = await this._pool.query(query);
+    const reply = result.rows[0];
 
-    return new CommentEntity({ ...result.rows[0] });
+    return new CommentEntity({
+      id: reply.id,
+      content: reply.content,
+      ownerId: reply.owner,
+    });
   }
 
   async deleteReply({ threadId, commentId, replyId }) {
     const deletedAt = new Date().toISOString();
     const query = {
       text: `
-        UPDATE comments SET deleted_at = $4 
-        WHERE thread_id = $1 
-        AND id = $3 
-        AND reply_to = $2 
-        AND deleted_at IS NULL 
+        UPDATE comments SET deleted_at = $1
+        WHERE id = $2
+        AND thread_id = $3
+        AND deleted_at IS NULL
         RETURNING id`,
-      values: [threadId, commentId, replyId, deletedAt],
+      values: [deletedAt, replyId, threadId],
     };
 
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
       throw new NotFoundError("Komentar tidak ditemukan");
-    }
-  }
-
-  async verifyCommentOwner(commentId, owner) {
-    const query = {
-      text: "SELECT * FROM comments WHERE id = $1",
-      values: [commentId],
-    };
-
-    const result = await this._pool.query(query);
-
-    if (!result.rowCount) {
-      throw new NotFoundError("Komentar tidak ditemukan");
-    }
-
-    const comment = result.rows[0];
-    if (comment.owner !== owner) {
-      throw new AuthorizationError("Anda tidak berhak mengakses resource ini");
     }
   }
 }

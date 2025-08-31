@@ -3,7 +3,6 @@ const ThreadRepositoryPostgres = require("../ThreadRepositoryPostgres");
 const ThreadsTableTestHelper = require("../../../../tests/ThreadsTableTestHelper");
 const UsersTableTestHelper = require("../../../../tests/UsersTableTestHelper");
 const ThreadEntity = require("../../../Domains/threads/entities/ThreadEntity");
-const InvariantError = require("../../../Commons/exceptions/InvariantError");
 const NotFoundError = require("../../../Commons/exceptions/NotFoundError");
 
 describe("ThreadRepository", () => {
@@ -31,7 +30,7 @@ describe("ThreadRepository", () => {
       const newThread = {
         title: "A New Thread",
         body: "This is the body of the new thread",
-        owner: "user-123",
+        ownerId: "user-123",
       };
 
       const fakeIdGenerator = () => "123"; // stub!
@@ -48,7 +47,7 @@ describe("ThreadRepository", () => {
       expect(createdThread).toStrictEqual(new ThreadEntity({
         id: 'thread-123',
         title: newThread.title,
-        owner: 'user-123'
+        ownerId: 'user-123'
       }));
       expect(threads).toHaveLength(1);
     });

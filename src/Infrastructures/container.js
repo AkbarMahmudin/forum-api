@@ -231,10 +231,6 @@ container.register([
           name: 'threadRepository',
           internal: ThreadRepository.name,
         },
-        {
-          name: 'jwtTokenManager',
-          internal: AuthenticationTokenManager.name,
-        },
       ],
     },
   },
@@ -247,10 +243,6 @@ container.register([
         {
           name: 'commentRepository',
           internal: CommentRepository.name,
-        },
-        {
-          name: 'jwtTokenManager',
-          internal: AuthenticationTokenManager.name,
         },
       ],
     },
@@ -269,10 +261,6 @@ container.register([
           name: 'threadRepository',
           internal: ThreadRepository.name,
         },
-        {
-          name: 'jwtTokenManager',
-          internal: AuthenticationTokenManager.name,
-        },
       ],
     },
   },
@@ -290,10 +278,6 @@ container.register([
           name: 'commentRepository',
           internal: CommentRepository.name,
         },
-        {
-          name: 'jwtTokenManager',
-          internal: AuthenticationTokenManager.name,
-        },
       ],
     },
   },
@@ -310,10 +294,6 @@ container.register([
         {
           name: 'commentRepository',
           internal: CommentRepository.name,
-        },
-        {
-          name: 'jwtTokenManager',
-          internal: AuthenticationTokenManager.name,
         },
       ],
     },

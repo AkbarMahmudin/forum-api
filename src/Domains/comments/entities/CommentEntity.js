@@ -2,19 +2,19 @@ class CommentEntity {
   constructor(payload) {
     this._verifyPayload(payload);
 
-    const { id, content, owner } = payload;
+    const { id, content, ownerId } = payload;
 
     this.id = id;
     this.content = content;
-    this.owner = owner;
+    this.owner = ownerId;
   }
 
-  _verifyPayload({ id, content, owner }) {
-    if (!id || !content || !owner) {
+  _verifyPayload({ id, content, ownerId }) {
+    if (!id || !content || !ownerId) {
       throw new Error('ADD_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
-    if (typeof id !== 'string' || typeof content !== 'string' || typeof owner !== 'string') {
+    if (typeof id !== 'string' || typeof content !== 'string' || typeof ownerId !== 'string') {
       throw new Error('ADD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }

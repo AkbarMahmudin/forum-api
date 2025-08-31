@@ -28,7 +28,7 @@ describe("CommentRepository", () => {
       const newComment = {
         content: "A New Comment",
         threadId: "thread-123",
-        owner: "user-123",
+        ownerId: "user-123",
       };
 
       const fakeIdGenerator = () => "123"; // stub!
@@ -45,7 +45,7 @@ describe("CommentRepository", () => {
       expect(createdComment).toStrictEqual(new CommentEntity({
         id: 'comment-123',
         content: newComment.content,
-        owner: 'user-123'
+        ownerId: 'user-123'
       }));
       expect(comments).toHaveLength(1);
     });
@@ -80,16 +80,6 @@ describe("CommentRepository", () => {
   });
 
   describe("verifyCommentOwner function", () => {
-    it("should throw NotFoundError when comment not found", async () => {
-      // Arrange
-      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
-
-      // Action & Assert
-      await expect(commentRepositoryPostgres.verifyCommentOwner('comment-123', 'user-123'))
-        .rejects
-        .toThrowError(NotFoundError);
-    });
-
     it("should throw AuthorizationError when comment owner is not the same as user", async () => {
       // Arrange User
       await UsersTableTestHelper.addUser({ id: 'user-123' });
@@ -105,7 +95,7 @@ describe("CommentRepository", () => {
         .toThrowError(AuthorizationError);
     });
 
-    it("should not throw NotFoundError and AuthorizationError when comment owner is the same as user", async () => {
+    it("should not throw NotFoundError and AuthorizationError when comment ownerId is the same as user", async () => {
       // Arrange User
       await UsersTableTestHelper.addUser({ id: 'user-123' });
       await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });

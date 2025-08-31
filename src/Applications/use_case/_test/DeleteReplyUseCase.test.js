@@ -1,68 +1,61 @@
 const ReplyRepository = require("../../../Domains/replies/ReplyRepository");
 const CommentRepository = require("../../../Domains/comments/CommentRepository");
-const AuthenticationTokenManager = require("../../security/AuthenticationTokenManager");
 const DeleteReplyUseCase = require("../DeleteReplyUseCase");
 
 describe("DeleteCommentUseCase", () => {
   it("should orchestrating the add reply action correctly", async () => {
     // Arrange
-    const threadId = "thread-123";
-    const commentId = "comment-123";
-    const replyId = "reply-123";
-    const headers = "Bearer AccessToken";
+    const useCasePayload = {
+      threadId: "thread-123",
+      commentId: "comment-123",
+      replyId: "reply-123",
+      ownerId: "user-123",
+    };
 
     /** creating dependency of use case */
     const mockReplyRepository = new ReplyRepository();
     const mockCommentRepository = new CommentRepository();
-    const mockJwtTokenManager = new AuthenticationTokenManager();
+    // const mockJwtTokenManager = new AuthenticationTokenManager();
 
     /** mocking needed function */
-    mockJwtTokenManager.authorize = jest
-      .fn()
-      .mockImplementation(() =>
-        Promise.resolve({ username: "Jhon", id: "user-123" })
-      );
-    mockJwtTokenManager.decodePayload = jest
-      .fn()
-      .mockImplementation(() =>
-        Promise.resolve({ username: "Jhon", id: "user-123" })
-      );
     mockCommentRepository.verifyCommentOwner = jest
       .fn()
-      .mockImplementation(() => Promise.resolve());
+      .mockImplementation(() =>
+        Promise.resolve(useCasePayload.replyId, useCasePayload.ownerId)
+      );
     mockCommentRepository.verifyCommentExist = jest
       .fn()
-      .mockImplementation(() => Promise.resolve());
-    mockReplyRepository.deleteReply = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve());
+      .mockImplementation(() =>
+        Promise.resolve(useCasePayload.threadId, useCasePayload.replyId)
+      );
+    mockReplyRepository.deleteReply = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        threadId: useCasePayload.threadId,
+        commentId: useCasePayload.commentId,
+        replyId: useCasePayload.replyId,
+      })
+    );
 
     /** creating use case instance */
     const getReplyUseCase = new DeleteReplyUseCase({
       replyRepository: mockReplyRepository,
       commentRepository: mockCommentRepository,
-      jwtTokenManager: mockJwtTokenManager,
     });
+    const expectedResult = {
+      threadId: useCasePayload.threadId,
+      commentId: useCasePayload.commentId,
+      replyId: useCasePayload.replyId,
+    };
 
     // Action
-    const commentEntity = await getReplyUseCase.execute({
-      threadId,
-      commentId,
-      replyId,
-      headerAuthorization: headers,
-    });
+    const commentEntity = await getReplyUseCase.execute(useCasePayload);
 
     // Assert
-    expect(commentEntity).toBeUndefined();
-    expect(mockJwtTokenManager.authorize).toBeCalledWith(headers);
+    expect(commentEntity).toEqual(expectedResult);
     expect(mockCommentRepository.verifyCommentOwner).toBeCalledWith(
-      replyId,
-      "user-123"
+      useCasePayload.replyId,
+      useCasePayload.ownerId
     );
-    expect(mockReplyRepository.deleteReply).toBeCalledWith({
-      threadId,
-      commentId,
-      replyId,
-    });
+    expect(mockReplyRepository.deleteReply).toBeCalledWith(expectedResult);
   });
 });

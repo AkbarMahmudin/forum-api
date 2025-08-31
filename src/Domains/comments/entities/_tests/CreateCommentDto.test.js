@@ -18,7 +18,7 @@ describe("CreateCommentdDto entity", () => {
     const payload = {
       content: "A comment content",
       threadId: true,
-      owner: 'user-123',
+      ownerId: 'user-123',
     };
 
     // Action & Assert
@@ -32,15 +32,15 @@ describe("CreateCommentdDto entity", () => {
     const payload = {
       content: "A comment content",
       threadId: "thread-123",
-      owner: 'user-123',
+      ownerId: 'user-123',
     };
 
     // Action
-    const { content, threadId, owner } = new CreateCommentdDto(payload);
+    const { content, threadId, ownerId } = new CreateCommentdDto(payload);
 
     // Assert
     expect(content).toEqual(payload.content);
     expect(threadId).toEqual(payload.threadId);
-    expect(owner).toEqual(payload.owner);
+    expect(ownerId).toEqual(payload.ownerId);
   });
 });

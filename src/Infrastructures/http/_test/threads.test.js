@@ -37,7 +37,6 @@ describe("Threads endpoint", () => {
 
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(401);
-      expect(responseJson.status).toEqual("fail");
       expect(responseJson.message).toBeDefined();
     });
 
@@ -199,6 +198,63 @@ describe("Threads endpoint", () => {
           id: "comment-123",
           username: "Taka",
           content: "Content of comment",
+          date: expect.any(String),
+        })
+      );
+    });
+
+    it("should response 200 and thread detail with comments deleted", async () => {
+      // Arrange
+      const server = await createServer(container);
+      await UsersTableTestHelper.addUser({ id: "user-123", username: "Hiiro" });
+      await UsersTableTestHelper.addUser({ id: "user-124", username: "Taka" });
+      await ThreadsTableTestHelper.addThread({
+        id: "thread-123",
+        owner: "user-123",
+      });
+      await CommentsTableTestHelper.addComment({
+        id: "comment-123",
+        threadId: "thread-123",
+        owner: "user-124",
+        deletedAt: new Date().toISOString(), // Simulate deleted comment
+      });
+      // reply comment
+      await CommentsTableTestHelper.addComment({
+        id: "reply-123",
+        threadId: "thread-123",
+        owner: "user-123",
+        replyTo: "comment-123",
+        deletedAt: new Date().toISOString(), // Simulate deleted comment
+      });
+
+      // Action
+      const response = await server.inject({
+        method: "GET",
+        url: "/threads/thread-123",
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual("success");
+      expect(responseJson.data.thread).toBeDefined();
+      expect(responseJson.data.thread.comments).toBeInstanceOf(Array);
+      expect(responseJson.data.thread.comments).toHaveLength(1);
+      expect(responseJson.data.thread.comments[0]).toEqual(
+        expect.objectContaining({
+          id: "comment-123",
+          username: "Taka",
+          content: "**komentar telah dihapus**",
+          date: expect.any(String),
+        })
+      );
+      expect(responseJson.data.thread.comments[0].replies).toBeInstanceOf(Array);
+      expect(responseJson.data.thread.comments[0].replies).toHaveLength(1);
+      expect(responseJson.data.thread.comments[0].replies[0]).toEqual(
+        expect.objectContaining({
+          id: "reply-123",
+          username: "Hiiro",
+          content: "**balasan telah dihapus**",
           date: expect.any(String),
         })
       );

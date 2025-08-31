@@ -5,7 +5,7 @@ describe("CommentEntity entity", () => {
     // Arrange
     const payload = {
       content: "A thread content",
-      owner: "user-123",
+      ownerId: "user-123",
     };
 
     // Action & Assert
@@ -19,7 +19,7 @@ describe("CommentEntity entity", () => {
     const payload = {
       id: "comment-123",
       content: "A comment content",
-      owner: true,
+      ownerId: true,
     };
 
     // Action & Assert
@@ -33,7 +33,7 @@ describe("CommentEntity entity", () => {
     const payload = {
       id: "comment-123",
       content: "A thread content",
-      owner: "user-123",
+      ownerId: "user-123",
     };
 
     // Action
@@ -42,6 +42,6 @@ describe("CommentEntity entity", () => {
     // Assert
     expect(id).toEqual(payload.id);
     expect(content).toEqual(payload.content);
-    expect(owner).toEqual(payload.owner);
+    expect(owner).toEqual(payload.ownerId);
   });
 });

@@ -11,13 +11,13 @@ class CommentRepositoryPostgres extends CommentRepository {
   }
 
   async createComment(newComment) {
-    const { content, threadId, owner } = newComment;
+    const { content, threadId, ownerId } = newComment;
     const id = `comment-${this._idGenerator()}`;
     const createdAt = new Date().toISOString();
 
     const query = {
-      text: "INSERT INTO comments (id, content, thread_id, owner, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, content, owner",
-      values: [id, content, threadId, owner, createdAt, createdAt],
+      text: `INSERT INTO comments (id, content, thread_id, owner, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, content, owner AS "ownerId"`,
+      values: [id, content, threadId, ownerId, createdAt, createdAt],
     };
 
     const result = await this._pool.query(query);
@@ -39,20 +39,15 @@ class CommentRepositoryPostgres extends CommentRepository {
     }
   }
 
-  async verifyCommentOwner(commentId, owner) {
+  async verifyCommentOwner(commentId, ownerId) {
     const query = {
-      text: "SELECT * FROM comments WHERE id = $1",
-      values: [commentId],
+      text: "SELECT * FROM comments WHERE id = $1 AND owner = $2 AND deleted_at IS NULL",
+      values: [commentId, ownerId],
     };
 
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
-      throw new NotFoundError("Komentar tidak ditemukan");
-    }
-
-    const comment = result.rows[0];
-    if (comment.owner !== owner) {
       throw new AuthorizationError("Anda tidak berhak mengakses resource ini");
     }
   }

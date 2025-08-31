@@ -1,13 +1,11 @@
 class DeleteCommentUseCase {
-  constructor({ commentRepository, jwtTokenManager }) {
+  constructor({ commentRepository }) {
     this._commentRepository = commentRepository;
-    this._jwtTokenManager = jwtTokenManager;
   }
 
-  async execute(threadId, commentId, headerAuthorization) {
-    const { id: owner } = await this._jwtTokenManager.authorize(headerAuthorization);
-    await this._commentRepository.verifyCommentOwner(commentId, owner);
-    
+  async execute({ threadId, commentId, ownerId }) {
+    await this._commentRepository.verifyCommentExist(threadId, commentId);
+    await this._commentRepository.verifyCommentOwner(commentId, ownerId);
     return this._commentRepository.deleteComment(threadId, commentId);
   }
 }

@@ -1,54 +1,51 @@
 const CommentRepository = require("../../../Domains/comments/CommentRepository");
-const AuthenticationTokenManager = require("../../security/AuthenticationTokenManager");
 const DeleteCommentUseCase = require("../DeleteCommentUseCase");
 
 describe("DeleteCommentUseCase", () => {
   it("should orchestrating the add comment action correctly", async () => {
     // Arrange
-    const threadId = "thread-123";
-    const commentId = "comment-123";
-    const headers = "Bearer AccessToken";
+    const useCasePayload = {
+      threadId: "thread-123",
+      commentId: "comment-123",
+      ownerId: "user-123",
+    };
 
     /** creating dependency of use case */
     const mockCommentRepository = new CommentRepository();
-    const mockJwtTokenManager = new AuthenticationTokenManager();
 
     /** mocking needed function */
-    mockJwtTokenManager.authorize = jest
+    mockCommentRepository.verifyCommentExist = jest
       .fn()
       .mockImplementation(() =>
-        Promise.resolve({ username: "Jhon", id: "user-123" })
+        Promise.resolve(useCasePayload.threadId, useCasePayload.commentId)
       );
     mockCommentRepository.verifyCommentOwner = jest
       .fn()
-      .mockImplementation(() => Promise.resolve());
+      .mockImplementation(() =>
+        Promise.resolve(useCasePayload.commentId, useCasePayload.ownerId)
+      );
     mockCommentRepository.deleteComment = jest
       .fn()
-      .mockImplementation(() => Promise.resolve());
+      .mockImplementation(() =>
+        Promise.resolve(useCasePayload.threadId, useCasePayload.commentId)
+      );
 
     /** creating use case instance */
     const getCommentUseCase = new DeleteCommentUseCase({
       commentRepository: mockCommentRepository,
-      jwtTokenManager: mockJwtTokenManager,
     });
 
     // Action
-    const commentEntity = await getCommentUseCase.execute(
-      threadId,
-      commentId,
-      headers
-    );
+    await getCommentUseCase.execute(useCasePayload);
 
     // Assert
-    expect(commentEntity).toBeUndefined();
-    expect(mockJwtTokenManager.authorize).toBeCalledWith(headers);
     expect(mockCommentRepository.verifyCommentOwner).toBeCalledWith(
-      commentId,
-      "user-123"
+      useCasePayload.commentId,
+      useCasePayload.ownerId
     );
     expect(mockCommentRepository.deleteComment).toBeCalledWith(
-      threadId,
-      commentId
+      useCasePayload.threadId,
+      useCasePayload.commentId
     );
   });
 });

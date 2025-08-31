@@ -1,11 +1,9 @@
 const pool = require("../../database/postgres/pool");
-const CommentRepositoryPostgres = require("../CommentRepositoryPostgres");
 const CommentsTableTestHelper = require("../../../../tests/CommentsTableTestHelper");
 const ThreadsTableTestHelper = require("../../../../tests/ThreadsTableTestHelper");
 const UsersTableTestHelper = require("../../../../tests/UsersTableTestHelper");
 const CommentEntity = require("../../../Domains/comments/entities/CommentEntity");
 const NotFoundError = require("../../../Commons/exceptions/NotFoundError");
-const AuthorizationError = require("../../../Commons/exceptions/AuthorizationError");
 const ReplyRepositoryPostgres = require("../ReplyRepositoryPostgres");
 
 describe("ReplyRepository", () => {
@@ -31,9 +29,9 @@ describe("ReplyRepository", () => {
       // Arrange
       const newReply = {
         threadId: "thread-123",
-        replyTo: "comment-123",
+        commentId: "comment-123",
+        ownerId: "user-3",
         content: "A New Reply Comment",
-        owner: "user-3",
       };
 
       const fakeIdGenerator = () => "123"; // stub!
@@ -46,13 +44,13 @@ describe("ReplyRepository", () => {
       const createdReply = await replyRepositoryPostgres.createReply(newReply);
 
       // Assert
-      const comments = await CommentsTableTestHelper.findCommentsById('reply-123');
+      const replies = await CommentsTableTestHelper.findCommentsById('reply-123');
       expect(createdReply).toStrictEqual(new CommentEntity({
         id: 'reply-123',
         content: newReply.content,
-        owner: 'user-3'
+        ownerId: newReply.ownerId,
       }));
-      expect(comments).toHaveLength(1);
+      expect(replies).toHaveLength(1);
     });
   });
 

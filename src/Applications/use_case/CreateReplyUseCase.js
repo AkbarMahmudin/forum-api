@@ -1,24 +1,21 @@
-const CreateReplyDto = require('../../Domains/replies/entities/CreateReplyDto');
+const CreateReplyDto = require("../../Domains/replies/entities/CreateReplyDto");
 
 class CreateReplyUseCase {
-  constructor({ replyRepository, commentRepository, jwtTokenManager }) {
+  constructor({ replyRepository, commentRepository }) {
     this._replyRepository = replyRepository;
     this._commentRepository = commentRepository;
-    this._jwtTokenManager = jwtTokenManager;
+    // this._jwtTokenManager = jwtTokenManager;
   }
 
-  async execute({threadId, replyTo, content, headerAuthorization}) {
-    await this._commentRepository.verifyCommentExist(threadId, replyTo);
+  async execute({ threadId, commentId, ownerId, content }) {
+    await this._commentRepository.verifyCommentExist(threadId, commentId);
     const createDto = new CreateReplyDto({
       threadId,
-      replyTo,
+      commentId,
       content,
     });
-    
-    const { id: owner } = await this._jwtTokenManager.authorize(headerAuthorization);
-    createDto.owner = owner;
-    
-    return this._replyRepository.createReply(createDto);
+
+    return this._replyRepository.createReply({ ...createDto, ownerId });
   }
 }
 

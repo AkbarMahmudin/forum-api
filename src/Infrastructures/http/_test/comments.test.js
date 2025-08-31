@@ -39,9 +39,9 @@ describe("Comments endpoint", () => {
         },
       });
 
+      
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(401);
-      expect(responseJson.status).toEqual("fail");
       expect(responseJson.message).toBeDefined();
     });
 
@@ -128,7 +128,6 @@ describe("Comments endpoint", () => {
     });
   });
 
-  // TODO: implement add comment to thread and delete comment
   describe("when DELETE /threads/{threadId}/comments/{comentId}", () => {
     it("should response 401 when unauthenticated", async () => {
       // Arrange
@@ -154,7 +153,6 @@ describe("Comments endpoint", () => {
 
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(401);
-      expect(responseJson.status).toEqual("fail");
       expect(responseJson.message).toBeDefined();
     });
 

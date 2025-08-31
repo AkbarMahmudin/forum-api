@@ -18,7 +18,7 @@ describe("CreateReplyDto entity", () => {
     const payload = {
       content: "A comment content",
       threadId: true,
-      replyTo: "comment-123",
+      commentId: "comment-123",
       owner: "user-123",
     };
 
@@ -33,16 +33,16 @@ describe("CreateReplyDto entity", () => {
     const payload = {
       content: "A comment content",
       threadId: "thread-123",
-      replyTo: "comment-123",
+      commentId: "comment-123",
       // owner: "user-123",
     };
 
     // Action
-    const { content, replyTo, threadId } = new CreateReplyDto(payload);
+    const { content, commentId, threadId } = new CreateReplyDto(payload);
 
     // Assert
     expect(content).toEqual(payload.content);
-    expect(replyTo).toEqual(payload.replyTo);
+    expect(commentId).toEqual(payload.commentId);
     expect(threadId).toEqual(payload.threadId);
     // expect(owner).toEqual(payload.owner);
   });

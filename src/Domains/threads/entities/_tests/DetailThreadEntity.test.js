@@ -57,7 +57,10 @@ describe("DetailThreadEntity entity", () => {
       username: "dicoding",
       body: "A thread body",
       date: "2021-08-08T07:19:09.775Z",
-      comments: [],
+      comments: [
+        { id: "comment-123", content: "A comment", username: "johndoe", date: "2021-08-08T07:19:09.775Z" },
+        { id: "comment-456", content: "Another comment", username: "dicoding", date: "2021-08-08T07:20:09.775Z" },
+      ],
     };
 
     // Action
@@ -71,5 +74,30 @@ describe("DetailThreadEntity entity", () => {
     expect(thread.body).toEqual(payload.body);
     expect(thread.date).toEqual(payload.date);
     expect(thread.comments).toEqual(payload.comments);
+    expect(thread.comments).toHaveLength(2);
+  });
+
+  it("should create DetailThreadEntity object correctly when comments not given", () => {
+    // Arrange
+    const payload = {
+      id: "thread-123",
+      title: "A Title Thread",
+      username: "dicoding",
+      body: "A thread body",
+      date: "2021-08-08T07:19:09.775Z",
+      comments: [],
+    };
+
+    // Action
+    const thread = new DetailThreadEntity(payload);
+
+    // Assert
+    expect(thread).toBeInstanceOf(DetailThreadEntity);
+    expect(thread.id).toEqual(payload.id);
+    expect(thread.title).toEqual(payload.title);
+    expect(thread.username).toEqual(payload.username);
+    expect(thread.body).toEqual(payload.body);
+    expect(thread.date).toEqual(payload.date);
+    expect(thread.comments).toEqual([]);
   });
 });

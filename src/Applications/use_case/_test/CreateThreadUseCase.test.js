@@ -1,7 +1,6 @@
 const CreateThreadDto = require("../../../Domains/threads/entities/CreateThreadDto");
 const ThreadEntity = require("../../../Domains/threads/entities/ThreadEntity");
 const ThreadRepository = require("../../../Domains/threads/ThreadRepository");
-const AuthenticationTokenManager = require("../../security/AuthenticationTokenManager");
 const CreateThreadUseCase = require("../CreateThreadUseCase");
 
 describe("CreateThreadUseCase", () => {
@@ -10,6 +9,7 @@ describe("CreateThreadUseCase", () => {
     const useCasePayload = {
       title: "A thread",
       body: "A body thread",
+      ownerId: "user-123",
     };
 
     const headers = "Bearer AccessToken";
@@ -17,20 +17,13 @@ describe("CreateThreadUseCase", () => {
     const mockThreadEntity = new ThreadEntity({
       id: "thread-123",
       title: useCasePayload.title,
-      owner: "user-123",
+      ownerId: useCasePayload.ownerId,
     });
 
     /** creating dependency of use case */
     const mockThreadRepository = new ThreadRepository();
-    const mockJwtTokenManager = new AuthenticationTokenManager();
 
     /** mocking needed function */
-    mockJwtTokenManager.authorize = jest
-      .fn()
-      .mockImplementation(() =>
-        Promise.resolve({ username: "Jhon", id: mockThreadEntity.owner })
-      );
-
     mockThreadRepository.createThread = jest
       .fn()
       .mockImplementation(() => Promise.resolve(mockThreadEntity));
@@ -38,28 +31,21 @@ describe("CreateThreadUseCase", () => {
     /** creating use case instance */
     const getThreadUseCase = new CreateThreadUseCase({
       threadRepository: mockThreadRepository,
-      jwtTokenManager: mockJwtTokenManager,
     });
 
     // Action
-    const threadEntity = await getThreadUseCase.execute(
-      useCasePayload,
-      headers
-    );
+    const threadEntity = await getThreadUseCase.execute(useCasePayload);
 
     // Assert
     expect(threadEntity).toStrictEqual(
       new ThreadEntity({
         id: "thread-123",
         title: useCasePayload.title,
-        owner: "user-123",
+        ownerId: "user-123",
       })
     );
     expect(mockThreadRepository.createThread).toBeCalledWith(
-      new CreateThreadDto({
-        ...useCasePayload,
-        owner: "user-123",
-      })
+      new CreateThreadDto(useCasePayload)
     );
   });
 });
