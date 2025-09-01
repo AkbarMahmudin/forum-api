@@ -138,4 +138,53 @@ describe("CommentRepository", () => {
         .not.toThrowError(NotFoundError);
     });
   });
+
+  describe("getCommentsByThreadId function", () => {
+    it("should return empty array when no comments for the thread", async () => {
+      // Arrange User
+      await UsersTableTestHelper.addUser({ id: 'user-123' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });
+
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+
+      // Action
+      const comments = await commentRepositoryPostgres.getCommentsByThreadId('thread-123');
+
+      // Assert
+      expect(comments).toHaveLength(0);
+    });
+
+    it("should return comments with replies for the thread correctly", async () => {
+      // Arrange User
+      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      await UsersTableTestHelper.addUser({ id: 'user-456', username: 'hiiro' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123' });
+      await CommentsTableTestHelper.addComment({ id: 'comment-123', threadId: 'thread-123', owner: 'user-123', content: 'sebuah komentar' });
+      await CommentsTableTestHelper.addComment({ id: 'comment-456', threadId: 'thread-123', owner: 'user-456', content: 'komentar kedua' });
+      await CommentsTableTestHelper.addComment({ id: 'reply-123', threadId: 'thread-123', replyTo: 'comment-123', owner: 'user-456', content: 'sebuah balasan' });
+      await CommentsTableTestHelper.addComment({ id: 'reply-456', threadId: 'thread-123', replyTo: 'comment-123', owner: 'user-123', content: 'balasan kedua' });
+
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+
+      // Action
+      const comments = await commentRepositoryPostgres.getCommentsByThreadId('thread-123');
+
+      // Assert
+      expect(comments).toHaveLength(2);
+      expect(comments[0].id).toEqual('comment-123');
+      expect(comments[0].content).toEqual('sebuah komentar');
+      expect(comments[0].username).toEqual('dicoding');
+      expect(comments[0].replies).toHaveLength(2);
+      expect(comments[0].replies[0].id).toEqual('reply-123');
+      expect(comments[0].replies[0].content).toEqual('sebuah balasan');
+      expect(comments[0].replies[0].username).toEqual('hiiro');
+      expect(comments[0].replies[1].id).toEqual('reply-456');
+      expect(comments[0].replies[1].content).toEqual('balasan kedua');
+      expect(comments[0].replies[1].username).toEqual('dicoding');
+      expect(comments[1].id).toEqual('comment-456');
+      expect(comments[1].content).toEqual('komentar kedua');
+      expect(comments[1].username).toEqual('hiiro');
+      expect(comments[1].replies).toHaveLength(0);
+    });
+  });
 });

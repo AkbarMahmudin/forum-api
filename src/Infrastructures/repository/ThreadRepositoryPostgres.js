@@ -35,48 +35,13 @@ class ThreadRepositoryPostgres extends ThreadRepository {
       values: [threadId],
     };
 
-    const threadResult = await this._pool.query(threadQuery);
+    const result = await this._pool.query(threadQuery);
 
-    if (threadResult.rowCount === 0) {
+    if (result.rowCount === 0) {
       throw new NotFoundError('thread tidak ditemukan');
     }
-
-    // Get comments for the thread
-    const commentQuery = {
-      text: `SELECT comments.id, comments.content, comments.created_at AS date, comments.deleted_at AS "deletedAt", users.username,
-              COALESCE(
-                json_agg(
-                  json_build_object(
-                    'id', replies.id,
-                    'content', replies.content,
-                    'date', replies.created_at,
-                    'deletedAt', replies.deleted_at,
-                    'username', userReply.username
-                  )
-                  ORDER BY replies.created_at ASC
-                ) FILTER (WHERE replies.id IS NOT NULL),
-                '[]'
-              ) AS replies
-             FROM comments
-             JOIN users ON comments.owner = users.id
-             LEFT JOIN comments replies ON replies.reply_to = comments.id
-             LEFT JOIN users userReply ON replies.owner = userReply.id
-             WHERE comments.thread_id = $1
-             AND comments.reply_to IS NULL
-             GROUP BY comments.id, comments.content, comments.created_at, comments.deleted_at, users.username
-             ORDER BY comments.created_at ASC`,
-      values: [threadId],
-    };
-
-    const commentResult = await this._pool.query(commentQuery);
-
-    // Prepare thread detail with comments
-    const threadDetail = {
-      ...threadResult.rows[0],
-      comments: commentResult.rows.length > 0 ? commentResult.rows : [],
-    };
     
-    return threadDetail;
+    return result.rows[0];
   }
 }
 

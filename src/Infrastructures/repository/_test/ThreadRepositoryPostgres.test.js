@@ -81,7 +81,6 @@ describe("ThreadRepository", () => {
         body: threadDetail.body,
         date: threadDetail.date,
         username: 'dicoding',
-        comments: [],
       });
     });
   });

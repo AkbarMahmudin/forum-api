@@ -1,5 +1,5 @@
 const ReplyRepository = require("../../Domains/replies/ReplyRepository");
-const CommentEntity = require("../../Domains/comments/entities/CommentEntity");
+const ReplyEntity = require("../../Domains/replies/entities/ReplyEntity");
 const NotFoundError = require("../../Commons/exceptions/NotFoundError");
 
 class ReplyRepositoryPostgres extends ReplyRepository {
@@ -22,7 +22,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     const result = await this._pool.query(query);
     const reply = result.rows[0];
 
-    return new CommentEntity({
+    return new ReplyEntity({
       id: reply.id,
       content: reply.content,
       ownerId: reply.owner,

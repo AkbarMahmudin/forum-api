@@ -1,19 +1,22 @@
 class DetailThreadUseCase {
-  constructor({ threadRepository }) {
+  constructor({ threadRepository, commentRepository }) {
     this._threadRepository = threadRepository;
+    this._commentRepository = commentRepository;
   }
 
   async execute(threadId) {
-    const detailThread = await this._threadRepository.getDetailThread(threadId);
+    const thread = await this._threadRepository.getDetailThread(threadId);
+    
+    const comments = await this._commentRepository.getCommentsByThreadId(threadId);
 
-    const { comments = [] } = detailThread;
-    detailThread.comments = this._mapComments(comments);
-
-    return detailThread;
+    return {
+      ...thread,
+      comments: this._mapComments(comments),
+    };
   }
 
   _mapComments(comments = [], isReply = false) {
-    return comments.map((comment) => ({
+    return comments?.map((comment) => ({
       ...comment,
       content: comment.deletedAt
         ? `**${isReply ? "balasan" : "komentar"} telah dihapus**`

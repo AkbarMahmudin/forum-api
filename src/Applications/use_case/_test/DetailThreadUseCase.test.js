@@ -1,7 +1,6 @@
-const CreateThreadDto = require("../../../Domains/threads/entities/CreateThreadDto");
+const CommentRepository = require("../../../Domains/comments/CommentRepository");
 const DetailThreadEntity = require("../../../Domains/threads/entities/DetailThreadEntity");
 const ThreadRepository = require("../../../Domains/threads/ThreadRepository");
-const AuthenticationTokenManager = require("../../security/AuthenticationTokenManager");
 const DetailThreadUseCase = require("../DetailThreadUseCase");
 
 describe("DetailThreadUseCase", () => {
@@ -17,9 +16,13 @@ describe("DetailThreadUseCase", () => {
     });
 
     /** creating dependency of use case */
+    const mockCommentRepository = new CommentRepository();
     const mockThreadRepository = new ThreadRepository();
 
     /** mocking needed function */
+    mockCommentRepository.getCommentsByThreadId = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve([]));
     mockThreadRepository.getDetailThread = jest
       .fn()
       .mockImplementation(() => Promise.resolve(mockThreadEntity));
@@ -27,6 +30,7 @@ describe("DetailThreadUseCase", () => {
     /** creating use case instance */
     const getThreadUseCase = new DetailThreadUseCase({
       threadRepository: mockThreadRepository,
+      commentRepository: mockCommentRepository,
     });
 
     // Action

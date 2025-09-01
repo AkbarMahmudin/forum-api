@@ -2,7 +2,7 @@ const pool = require("../../database/postgres/pool");
 const CommentsTableTestHelper = require("../../../../tests/CommentsTableTestHelper");
 const ThreadsTableTestHelper = require("../../../../tests/ThreadsTableTestHelper");
 const UsersTableTestHelper = require("../../../../tests/UsersTableTestHelper");
-const CommentEntity = require("../../../Domains/comments/entities/CommentEntity");
+const ReplyEntity = require("../../../Domains/replies/entities/ReplyEntity");
 const NotFoundError = require("../../../Commons/exceptions/NotFoundError");
 const ReplyRepositoryPostgres = require("../ReplyRepositoryPostgres");
 
@@ -45,7 +45,7 @@ describe("ReplyRepository", () => {
 
       // Assert
       const replies = await CommentsTableTestHelper.findCommentsById('reply-123');
-      expect(createdReply).toStrictEqual(new CommentEntity({
+      expect(createdReply).toStrictEqual(new ReplyEntity({
         id: 'reply-123',
         content: newReply.content,
         ownerId: newReply.ownerId,
