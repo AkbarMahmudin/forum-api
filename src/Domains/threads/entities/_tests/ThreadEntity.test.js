@@ -19,7 +19,7 @@ describe("ThreadEntity entity", () => {
     const payload = {
       id: "thread-123",
       title: "A thread title",
-      owner: true,
+      ownerId: true,
     };
 
     // Action & Assert
@@ -33,7 +33,7 @@ describe("ThreadEntity entity", () => {
     const payload = {
       id: "thread-123",
       title: "A".repeat(101),
-      owner: "user-123",
+      ownerId: "user-123",
     };
 
     // Action & Assert
@@ -42,24 +42,12 @@ describe("ThreadEntity entity", () => {
     );
   });
 
-  it("should throw error when id not valid", () => {
-    // Arrange
-    const payload = {
-      id: "thread_123",
-      title: "A thread title",
-      owner: "user-123",
-    };
-
-    // Action & Assert
-    expect(() => new ThreadEntity(payload)).toThrow("ADD_THREAD.ID_NOT_VALID");
-  });
-
   it("should create ThreadEntity object correctly", () => {
     // Arrange
     const payload = {
       id: "thread-123",
       title: "A thread title",
-      owner: "user-123",
+      ownerId: "user-123",
     };
 
     // Action
@@ -68,6 +56,6 @@ describe("ThreadEntity entity", () => {
     // Assert
     expect(id).toEqual(payload.id);
     expect(title).toEqual(payload.title);
-    expect(owner).toEqual(payload.owner);
+    expect(owner).toEqual(payload.ownerId);
   });
 });

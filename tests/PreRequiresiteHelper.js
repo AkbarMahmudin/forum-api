@@ -1,5 +1,4 @@
 /* instanbul ignore file */
-
 const preRequireSiteHelper = async ({ server, username = "Hiiro" }) => {
   // Create User
   const userPayload = {

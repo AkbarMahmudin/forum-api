@@ -18,7 +18,7 @@ describe("CreateThreadDto entity", () => {
     const payload = {
       title: "A thread title",
       body: true,
-      owner: 'user-123',
+      ownerId: 'user-123',
     };
 
     // Action & Assert
@@ -32,7 +32,7 @@ describe("CreateThreadDto entity", () => {
     const payload = {
       title: "A".repeat(101),
       body: "A thread body",
-      owner: 'user-123',
+      ownerId: 'user-123',
     };
 
     // Action & Assert
@@ -46,15 +46,15 @@ describe("CreateThreadDto entity", () => {
     const payload = {
       title: "A thread title",
       body: "A thread body",
-      owner: 'user-123',
+      ownerId: 'user-123',
     };
 
     // Action
-    const { title, body, owner } = new CreateThreadDto(payload);
+    const { title, body, ownerId } = new CreateThreadDto(payload);
 
     // Assert
     expect(title).toEqual(payload.title);
     expect(body).toEqual(payload.body);
-    expect(owner).toEqual(payload.owner);
+    expect(ownerId).toEqual(payload.ownerId);
   });
 });

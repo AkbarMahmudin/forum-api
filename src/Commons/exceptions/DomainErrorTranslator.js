@@ -1,4 +1,5 @@
 const InvariantError = require('./InvariantError');
+const AuthenticationError = require('./AuthenticationError');
 
 const DomainErrorTranslator = {
   translate(error) {
@@ -20,6 +21,16 @@ DomainErrorTranslator._directories = {
   'ADD_THREAD.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat thread baru karena properti yang dibutuhkan tidak ada'),
   'ADD_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat thread baru karena tipe data tidak sesuai'),
   'ADD_THREAD.TITLE_LIMIT_CHAR': new InvariantError('tidak dapat membuat thread baru karena karakter title melebihi batas limit'),
+  'ADD_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat comment baru karena properti yang dibutuhkan tidak ada'),
+  'ADD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat comment baru karena tipe data tidak sesuai'),
+  'ADD_REPLY.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat reply comment baru karena properti yang dibutuhkan tidak ada'),
+  'ADD_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat reply comment baru karena tipe data tidak sesuai'),
+  'DETAIL_THREAD.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat mendapatkan detail thread karena properti yang dibutuhkan tidak ada'),
+  'DETAIL_THREAD.TITLE_LIMIT_CHAR': new InvariantError('tidak dapat mendapatkan detail thread karena karakter title melebihi batas limit'),
+  'DETAIL_THREAD.COMMENTS_NOT_ARRAY': new InvariantError('tidak dapat mendapatkan detail thread karena comments bukan array'),
+  'ADD_REPLY.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat reply baru karena properti yang dibutuhkan tidak ada'),
+  'ADD_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat reply baru karena tipe data tidak sesuai'),
+  'DELETE_REPLY_USE_CASE.NOT_CONTAIN_NEEDED_PROPERTY': new AuthenticationError('Missing authentication'),
 };
 
 module.exports = DomainErrorTranslator;

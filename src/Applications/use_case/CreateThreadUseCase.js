@@ -1,17 +1,12 @@
 const CreateThreadDto = require('../../Domains/threads/entities/CreateThreadDto');
 
 class CreateThreadUseCase {
-  constructor({ threadRepository, jwtTokenManager }) {
+  constructor({ threadRepository }) {
     this._threadRepository = threadRepository;
-    this._jwtTokenManager = jwtTokenManager;
   }
 
-  async execute(useCasePayload, headerAuthorization) {
-    const { id: owner } = await this._jwtTokenManager.authorize(headerAuthorization);
-    useCasePayload.owner = owner;
-
+  async execute(useCasePayload) {
     const createDto = new CreateThreadDto(useCasePayload);
-    
     return this._threadRepository.createThread(createDto);
   }
 }
