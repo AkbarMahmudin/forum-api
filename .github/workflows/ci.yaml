@@ -51,4 +51,4 @@ jobs:
         PGDATABASE: forum_test
         ACCESS_TOKEN_KEY: secretkey
         REFRESH_TOKEN_KEY: anothersecretkey
-        ACCESS_TOKEN_AGE: 1800s
+        ACCESS_TOKEN_AGE: 3600
