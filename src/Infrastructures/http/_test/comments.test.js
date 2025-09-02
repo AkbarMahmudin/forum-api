@@ -5,7 +5,7 @@ const AuthenticationsTableTestHelper = require("../../../../tests/Authentication
 const CommentsTableTestHelper = require("../../../../tests/CommentsTableTestHelper");
 const container = require("../../container");
 const createServer = require("../createServer");
-const preRequireSiteHelper = require("../../../../tests/PreRequireSiteHelper");
+const preRequireSiteHelper = require("../../../../tests/PreRequiresiteHelper");
 
 describe("Comments endpoint", () => {
   afterAll(async () => {
