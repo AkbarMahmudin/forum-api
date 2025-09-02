@@ -1,0 +1,54 @@
+name: Forum API Continues Integration
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: secretpassword
+          POSTGRES_DB: forum_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Using Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install test & migrate
+      run: |
+        npm install
+        npm run migrate up
+        npm run test
+      env:
+        CI: true
+        HOST: localhost
+        PORT: 3000
+        PGHOST: localhost
+        PGPORT: 5432
+        PGUSER: postgres
+        PGPASSWORD: secretpassword
+        PGDATABASE: forum_test
+        ACCESS_TOKEN_KEY: secretkey
+        REFRESH_TOKEN_KEY: anothersecretkey
+        ACCESS_TOKEN_AGE: 1800s
