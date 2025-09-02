@@ -5,7 +5,7 @@ const CommentsTableTestHelper = require("../../../../tests/CommentsTableTestHelp
 const AuthenticationsTableTestHelper = require("../../../../tests/AuthenticationsTableTestHelper");
 const container = require("../../container");
 const createServer = require("../createServer");
-const preRequireSiteHelper = require("../../../../tests/PreRequireSiteHelper");
+const preRequireSiteHelper = require("../../../../tests/PreRequiresiteHelper");
 
 describe("Threads endpoint", () => {
   afterAll(async () => {
