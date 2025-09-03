@@ -40,15 +40,21 @@ describe("ThreadRepository", () => {
       );
 
       // Action
-      const createdThread = await threadRepositoryPostgres.createThread(newThread);
+      const createdThread = await threadRepositoryPostgres.createThread(
+        newThread
+      );
 
       // Assert
-      const threads = await ThreadsTableTestHelper.findThreadsById('thread-123');
-      expect(createdThread).toStrictEqual(new ThreadEntity({
-        id: 'thread-123',
-        title: newThread.title,
-        ownerId: 'user-123'
-      }));
+      const threads = await ThreadsTableTestHelper.findThreadsById(
+        "thread-123"
+      );
+      expect(createdThread).toStrictEqual(
+        new ThreadEntity({
+          id: "thread-123",
+          title: newThread.title,
+          ownerId: "user-123",
+        })
+      );
       expect(threads).toHaveLength(1);
     });
   });
@@ -59,28 +65,38 @@ describe("ThreadRepository", () => {
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       // Action & Assert
-      await expect(threadRepositoryPostgres.getDetailThread('thread-123')).rejects.toThrowError(NotFoundError);
+      await expect(
+        threadRepositoryPostgres.getDetailThread("thread-123")
+      ).rejects.toThrowError(NotFoundError);
     });
 
     it("should return thread detail correctly", async () => {
       // Arrange User
-      await UsersTableTestHelper.addUser({ id: 'user-123', username: 'dicoding' });
+      await UsersTableTestHelper.addUser({
+        id: "user-123",
+        username: "dicoding",
+      });
 
       // Arrange Thread
-      await ThreadsTableTestHelper.addThread({ id: 'thread-123', owner: 'user-123'});
+      await ThreadsTableTestHelper.addThread({
+        id: "thread-123",
+        owner: "user-123",
+      });
 
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       // Action
-      const threadDetail = await threadRepositoryPostgres.getDetailThread('thread-123');
+      const threadDetail = await threadRepositoryPostgres.getDetailThread(
+        "thread-123"
+      );
 
       // Assert
       expect(threadDetail).toStrictEqual({
-        id: 'thread-123',
+        id: "thread-123",
         title: threadDetail.title,
         body: threadDetail.body,
         date: threadDetail.date,
-        username: 'dicoding',
+        username: "dicoding",
       });
     });
   });
