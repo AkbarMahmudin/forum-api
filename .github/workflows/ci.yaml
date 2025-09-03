@@ -1,4 +1,4 @@
-name: Forum API Continues Integration
+name: Continues Integration
 
 on:
   pull_request:
