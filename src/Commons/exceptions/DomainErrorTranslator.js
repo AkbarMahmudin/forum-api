@@ -31,6 +31,8 @@ DomainErrorTranslator._directories = {
   'ADD_REPLY.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat reply baru karena properti yang dibutuhkan tidak ada'),
   'ADD_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat reply baru karena tipe data tidak sesuai'),
   'DELETE_REPLY_USE_CASE.NOT_CONTAIN_NEEDED_PROPERTY': new AuthenticationError('Missing authentication'),
+  'LIKE.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat like karena properti yang dibutuhkan tidak ada'),
+  'LIKE.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat like karena tipe data tidak sesuai'),
 };
 
 module.exports = DomainErrorTranslator;

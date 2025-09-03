@@ -67,7 +67,7 @@ class CommentRepositoryPostgres extends CommentRepository {
 
   async getCommentsByThreadId(threadId) {
     const query = {
-      text: `SELECT comments.id, comments.content, comments.created_at AS date, comments.deleted_at AS "deletedAt", users.username,
+      text: `SELECT comments.id, comments.content, comments.created_at AS date, comments.deleted_at AS "deletedAt", users.username, COUNT(DISTINCT likes.user_id)::INTEGER AS "likeCount",
               COALESCE(
                 json_agg(
                   json_build_object(
@@ -85,6 +85,7 @@ class CommentRepositoryPostgres extends CommentRepository {
              JOIN users ON comments.owner = users.id
              LEFT JOIN comments replies ON replies.reply_to = comments.id
              LEFT JOIN users userReply ON replies.owner = userReply.id
+             LEFT JOIN likes ON likes.comment_id = comments.id
              WHERE comments.thread_id = $1
              AND comments.reply_to IS NULL
              GROUP BY comments.id, comments.content, comments.created_at, comments.deleted_at, users.username
